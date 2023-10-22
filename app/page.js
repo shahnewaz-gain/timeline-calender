@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import { Eventcalendar, getJson, setOptions } from "@mobiscroll/react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Eventcalendar, getJson, Popup, setOptions } from "@mobiscroll/react";
 import "@mobiscroll/react/dist/css/mobiscroll.min.css";
 import moment from "moment";
 import { ChevronDown } from "react-feather";
@@ -12,8 +12,20 @@ setOptions({
   themeVariant: "light",
 });
 
+const responsivePopup = {
+  medium: {
+    display: "center",
+    width: 400,
+    fullScreen: false,
+    touchUi: false,
+    showOverlay: false,
+  },
+};
+
 export default function Home() {
   const [myEvents, setEvents] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState({});
 
   const view = useMemo(
     () => ({
@@ -113,6 +125,35 @@ export default function Home() {
     return <div className="bg-brand">asdasd</div>;
   };
 
+  // scheduler options
+  const onEventClick = useCallback((args) => {
+    const event = args.event;
+
+    setSelectedEvent(event);
+    setIsOpen(true);
+  }, []);
+
+  const onClose = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  const headerText = () => `<div>Header</div>`;
+
+  // popup options
+  const popupButtons = useMemo(() => {
+    return [
+      "cancel",
+      {
+        handler: () => {
+          setIsOpen(false);
+        },
+        keyCode: "enter",
+        text: "Save",
+        cssClass: "text-border",
+      },
+    ];
+  }, []);
+
   return (
     <main className="px-24 timeline-calender">
       <div className="m-8">
@@ -125,8 +166,23 @@ export default function Home() {
           renderHour={renderCustomHour}
           renderHeader={renderCustomHeader}
           extendDefaultEvent={renderEventContent}
-          onEventClick={(arg) => alert(arg?.event?.title)}
+          onEventClick={onEventClick}
         />
+        <Popup
+          display="bottom"
+          fullScreen={true}
+          contentPadding={false}
+          headerText={headerText()}
+          buttons={popupButtons}
+          isOpen={isOpen}
+          onClose={onClose}
+          responsive={responsivePopup}
+          cssClass="employee-shifts-popup"
+        >
+          <div className="mbsc-form-group">
+            <h1 className="text-center">{selectedEvent.title}</h1>
+          </div>
+        </Popup>
       </div>
     </main>
   );
