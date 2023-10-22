@@ -125,6 +125,7 @@ export default function Home() {
           renderHour={renderCustomHour}
           renderHeader={renderCustomHeader}
           extendDefaultEvent={renderEventContent}
+          onEventClick={(arg) => alert(arg?.event?.title)}
         />
       </div>
     </main>
