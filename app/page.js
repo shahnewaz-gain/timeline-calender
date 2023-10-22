@@ -1,3 +1,4 @@
+/* eslint-disable react/no-string-refs */
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -14,7 +15,7 @@ setOptions({
 
 const responsivePopup = {
   medium: {
-    display: "center",
+    display: "anchored",
     width: 400,
     fullScreen: false,
     touchUi: false,
@@ -26,6 +27,7 @@ export default function Home() {
   const [myEvents, setEvents] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState({});
+  const [anchor, setAnchor] = useState(null);
 
   const view = useMemo(
     () => ({
@@ -128,7 +130,9 @@ export default function Home() {
   // scheduler options
   const onEventClick = useCallback((args) => {
     const event = args.event;
+    console.log("click", args);
 
+    setAnchor(args.domEvent.target);
     setSelectedEvent(event);
     setIsOpen(true);
   }, []);
@@ -172,11 +176,13 @@ export default function Home() {
           display="bottom"
           fullScreen={true}
           contentPadding={false}
-          headerText={headerText()}
-          buttons={popupButtons}
+          // headerText={headerText()}
+          anchor={anchor}
+          // buttons={popupButtons}
           isOpen={isOpen}
           onClose={onClose}
           responsive={responsivePopup}
+          showArrow={false}
           cssClass="employee-shifts-popup"
         >
           <div className="mbsc-form-group">
